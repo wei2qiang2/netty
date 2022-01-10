@@ -18,6 +18,8 @@ package io.netty.buffer;
 /**
  * Implementations are responsible to allocate buffers. Implementations of this interface are expected to be
  * thread-safe.
+ *
+ * 内存分配器，有池化的实现和非池化的实现
  */
 public interface ByteBufAllocator {
 
@@ -49,6 +51,8 @@ public interface ByteBufAllocator {
 
     /**
      * Allocate a {@link ByteBuf}, preferably a direct buffer which is suitable for I/O.
+     *
+     * 判断有无jdk的UnSafe的类，如果有，那么使用直接内存分配，否则使用堆内存分配
      */
     ByteBuf ioBuffer(int initialCapacity);
 

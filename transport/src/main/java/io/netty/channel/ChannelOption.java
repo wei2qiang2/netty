@@ -30,6 +30,8 @@ import java.net.NetworkInterface;
  * to.
  *
  * @param <T>   the type of the value which is valid for the {@link ChannelOption}
+ *
+ * 配置的TCP相关的一些选项
  */
 public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
 
@@ -112,11 +114,23 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<Boolean> AUTO_CLOSE = valueOf("AUTO_CLOSE");
 
     public static final ChannelOption<Boolean> SO_BROADCAST = valueOf("SO_BROADCAST");
+    // TCP协议用的连接保活：定期发送一个保活的保存等待对端返回。（2个小时一次，类似于心跳机制，但是时间太长，所以很少使用）
+    // 两个主机TCP建立起的连接，操作系统的实现，不知道应用程序实际情况
     public static final ChannelOption<Boolean> SO_KEEPALIVE = valueOf("SO_KEEPALIVE");
+    // 发送缓冲区大小（4k-8k）：建立起通道之后，会在两端建立发送缓冲区和接收缓冲区，根据传输的文件或者数据大小
+    // 操作系统的buffer，不是应用程序中的buffer
     public static final ChannelOption<Integer> SO_SNDBUF = valueOf("SO_SNDBUF");
+    // 接受缓冲区（4k-8k）
     public static final ChannelOption<Integer> SO_RCVBUF = valueOf("SO_RCVBUF");
+    // 解决底层操作系统的端口重用
     public static final ChannelOption<Boolean> SO_REUSEADDR = valueOf("SO_REUSEADDR");
+    // 一个网络应用结束了，需要调用close方法关闭连接
+    // 当关闭连接的时候，有可能发送缓冲区的数据还没有发送完，一般来说会尽量发送，但是不保证能一定发完
+    // 所以对端收到的数据可能不完整
+    // SO_LINGER： 告诉操作系统即使调用close关闭连接也要等到发送缓冲区的数据发送完成，可以阻塞close方法的调用
     public static final ChannelOption<Integer> SO_LINGER = valueOf("SO_LINGER");
+    // SO_BACKLOG： 在监听的时候可连接队列（等待队列），在创建连接的时候，如果正在进行三次握手，那么需要等待的话，将这个等待线程放入该等待队列
+    // TCP连接后会建立两个队列
     public static final ChannelOption<Integer> SO_BACKLOG = valueOf("SO_BACKLOG");
     public static final ChannelOption<Integer> SO_TIMEOUT = valueOf("SO_TIMEOUT");
 
@@ -125,7 +139,11 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<NetworkInterface> IP_MULTICAST_IF = valueOf("IP_MULTICAST_IF");
     public static final ChannelOption<Integer> IP_MULTICAST_TTL = valueOf("IP_MULTICAST_TTL");
     public static final ChannelOption<Boolean> IP_MULTICAST_LOOP_DISABLED = valueOf("IP_MULTICAST_LOOP_DISABLED");
-
+    // 和Nagle算法相关，当我们发送数据的时候，操作系统可以采用
+    // 1. 来一条发送一条：很快
+    // 2. 等写多条后一次性发送对端：有数据延迟，对带宽友好（默认的发送方式）
+    // TCP_NODELAY：就是禁用Nagle发送，采用来一条发一条，使用在小数据量的地方
+    // TCP_CORK: 尽可能多的数据再发送
     public static final ChannelOption<Boolean> TCP_NODELAY = valueOf("TCP_NODELAY");
     /**
      * Client-side TCP FastOpen. Sending data with the initial TCP handshake.

@@ -244,6 +244,28 @@ import java.nio.charset.UnsupportedCharsetException;
  *
  * Please refer to {@link ByteBufInputStream} and
  * {@link ByteBufOutputStream}.
+ *
+ * TCP/IP 协议
+ *
+ * 取代NIO中的ByteBuffer
+ *
+ * ByteBuf本身在写和读维护了单独的索引：readerIndex和writerIndex
+ * NIO中的ByteBuffer 写或者读之后都需要flip一下
+ * ByteBuf中的以read和write开头的方法会推进读索引和写索引，而set或者get方法不会改变索引，当索引操作可用时会出现异常
+ *
+ * JVM中直接内存的概念
+ *
+ * Netty中的ByteBuf也有直接内存或者堆上的分配
+ *
+ * 直接内存：分配的时候慢，需要事先多个申请的步骤，但在网络读写上更快
+ *
+ * 堆内存：分配释放很快，但实际网络读写的时候慢一些
+ *
+ * 复合缓冲区（逻辑上的概念）：（例如HTTP协议包括消息头消息体，分别都有自己的buffer，发送的时候都是拼接在一起发送的，所以使用复合缓冲区）
+ *
+ * 如果是业务层面读写的话使用堆的事先，如果是网络的读写选择直接内存的实现
+ *
+ * 原生的BIO的ByteBuffer有绝对读和相对读
  */
 public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
 

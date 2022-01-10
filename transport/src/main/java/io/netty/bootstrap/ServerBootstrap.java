@@ -41,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link Bootstrap} sub-class which allows easy bootstrap of {@link ServerChannel}
  *
+ * 服务端启动器，可接受两个EventLoopGroup
+ *
  */
 public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
 
@@ -71,6 +73,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      */
     @Override
     public ServerBootstrap group(EventLoopGroup group) {
+        // 这个地方是两个EventLoopGroup
+        // 第一个ServerChannel绑定
+        // 第二个是和Channel绑定
         return group(group, group);
     }
 
